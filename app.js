@@ -5,13 +5,23 @@ const watchLaterSection = document.querySelector('#watch-later');
 
 const API_URL = 'https://omdb-api.now.sh/?type=movie&s=';
 
+const state ={
+    searchTerm: '',
+    results: [],
+    watchLater: []
+};
+
+input.addEventListener('keyup', () => {
+    state.searchTerm = input.value;
+});
+
 form.addEventListener('submit', formSubmitted);
 
 async function formSubmitted(event){
     event.preventDefault();
-    const searchTerm = input.value;
+    
     try{
-        const results = await getResults(searchTerm);
+        const results = await getResults(state.searchTerm);
         showResults(results);
     }catch(error){
         showError(error);
