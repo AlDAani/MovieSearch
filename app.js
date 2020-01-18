@@ -1,6 +1,7 @@
 const form = document.querySelector('form');
 const input = document.querySelector('#searchTerm');
 const resultsSection = document.querySelector('#results');
+const watchLaterSection = document.querySelector('#watch-later');
 
 const API_URL = 'https://omdb-api.now.sh/?type=movie&s=';
 
@@ -13,7 +14,7 @@ async function formSubmitted(event){
         const results = await getResults(searchTerm);
         showResults(results);
     }catch(error){
-        console.error(error);
+        showError(error);
     }
 }
 
@@ -30,14 +31,34 @@ async function getResults(searchTerm){
 
 function showResults(results){
     resultsSection.innerHTML = results.reduce((html, movie) => {
-        return html + `
-        <div class="card col-4 pt-3" style="width: 18rem;">
-            <img src="${movie.Poster}" class="card-img-top" alt="${movie.Title}">
-            <div class="card-body">
-                <h5 class="card-title">${movie.Title}</h5>
-                <p class="card-text">${movie.Year}</p>
-                <button type="button" class="btn btn-primary">Watch later</button>
-            </div>
-        </div>`;
+        return html + getMovieTemplate(movie, 4);
     },'');
+
+    const watchLaterButtons = document.querySelectorAll('.watch-later-button');
+    watchLaterButtons.forEach(button =>{
+        button.addEventListener('click',(event) => {
+            const {id} = button.dataset;
+            const movie = results.find(movie => movie.imdbID === id);
+            watchLaterSection.innerHTML = watchLaterSection.innerHTML + getMovieTemplate(movie, 12, false);
+        });
+    });
+}
+
+function getMovieTemplate(movie, cols, button = true){
+    return `
+    <div class="card col-${cols} pt-3" style="width: 18rem;">
+        <img src="${movie.Poster}" class="card-img-top" alt="${movie.Title}">
+        <div class="card-body">
+            <h5 class="card-title">${movie.Title}</h5>
+            <p class="card-text">${movie.Year}</p>
+            ${button ? `<button data-id="${movie.imdbID}" type="button" class="btn btn-primary watch-later-button">Watch later</button>` : ''}
+        </div>
+    </div>`;
+}
+
+function showError(error){
+    resultsSection.innerHTML = 
+    `<div class="alert alert-danger" role="alert">
+    ${error.message}
+  </div>`;
 }
