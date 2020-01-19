@@ -18,6 +18,7 @@ input.addEventListener('keyup', () => {
 form.addEventListener('submit', formSubmitted);
 
 async function formSubmitted(event){
+
     event.preventDefault();
     try{
         state.results = await getResults(state.searchTerm);
@@ -25,9 +26,11 @@ async function formSubmitted(event){
     }catch(error){
         showError(error);
     }
+    
 }
 
 async function getResults(searchTerm){
+
     const url = `${API_URL}${searchTerm}`;
     const response = await fetch(url);
     const data = await response.json();
@@ -35,15 +38,17 @@ async function getResults(searchTerm){
         throw new Error(data.Error);
     }
     return data.Search;
+
 }
 
 
 function showResults(){
+
     resultsSection.innerHTML = state.results.reduce((html, movie) => {
         return html + getMovieTemplate(movie, 4);
     },'');
-    
     addButtonListeners();
+
 }
 
 function addButtonListeners(){
@@ -56,19 +61,24 @@ function addButtonListeners(){
 }
 
 function buttonClicked(event) {
+
     const { id } = event.target.dataset;
     const movie = state.results.find(movie => movie.imdbID === id);
     state.watchLater.push(movie);
     updateWatchLaterSection();
+
 }
 
 function updateWatchLaterSection(){
+
     watchLaterSection.innerHTML = state.watchLater.reduce((html, movie) => {
         return html + getMovieTemplate(movie, 12, false);
     },'');
+
 }
 
 function getMovieTemplate(movie, cols, button = true){
+
     return `
     <div class="card col-${cols} pt-3" style="width: 18rem;">
         <img src="${movie.Poster}" class="card-img-top" alt="${movie.Title}">
@@ -78,11 +88,14 @@ function getMovieTemplate(movie, cols, button = true){
             ${button ? `<button data-id="${movie.imdbID}" type="button" class="btn btn-primary watch-later-button">Watch later</button>` : ''}
         </div>
     </div>`;
+
 }
 
 function showError(error){
+
     resultsSection.innerHTML = 
     `<div class="alert alert-danger" role="alert">
     ${error.message}
   </div>`;
+
 }
