@@ -19,10 +19,9 @@ form.addEventListener('submit', formSubmitted);
 
 async function formSubmitted(event){
     event.preventDefault();
-    
     try{
-        const results = await getResults(state.searchTerm);
-        showResults(results);
+        state.results = await getResults(state.searchTerm);
+        showResults();
     }catch(error){
         showError(error);
     }
@@ -39,19 +38,34 @@ async function getResults(searchTerm){
 }
 
 
-function showResults(results){
-    resultsSection.innerHTML = results.reduce((html, movie) => {
+function showResults(){
+    resultsSection.innerHTML = state.results.reduce((html, movie) => {
         return html + getMovieTemplate(movie, 4);
     },'');
+    
+    addButtonListeners();
+}
+
+function addButtonListeners(){
 
     const watchLaterButtons = document.querySelectorAll('.watch-later-button');
-    watchLaterButtons.forEach(button =>{
-        button.addEventListener('click',(event) => {
-            const {id} = button.dataset;
-            const movie = results.find(movie => movie.imdbID === id);
-            watchLaterSection.innerHTML = watchLaterSection.innerHTML + getMovieTemplate(movie, 12, false);
-        });
+    watchLaterButtons.forEach(button => {
+        button.addEventListener('click', buttonClicked);
     });
+
+}
+
+function buttonClicked(event) {
+    const { id } = event.target.dataset;
+    const movie = state.results.find(movie => movie.imdbID === id);
+    state.watchLater.push(movie);
+    updateWatchLaterSection();
+}
+
+function updateWatchLaterSection(){
+    watchLaterSection.innerHTML = state.watchLater.reduce((html, movie) => {
+        return html + getMovieTemplate(movie, 12, false);
+    },'');
 }
 
 function getMovieTemplate(movie, cols, button = true){
