@@ -73,7 +73,7 @@ function getMovieTemplate(movie, cols, button = true){
         <div class="card-body">
             <h5 class="card-title">${movie.Title}</h5>
             <p class="card-text">${movie.Year}</p>
-            ${button ? 
+            ${button ?
                 `<button onclick='buttonClicked(event)' data-id="${movie.imdbID}" type="button" class="btn btn-primary watch-later-button">Watch later</button>`
                  : ''}
         </div>
@@ -82,7 +82,8 @@ function getMovieTemplate(movie, cols, button = true){
 }
 
 function render(state){
-    app.innerHTML = ` 
+
+    app.innerHTML = `
         <section class="row movies-area">
         <section class="mt-2 col-9 row" id="results">
             ${
@@ -90,7 +91,7 @@ function render(state){
                     state.results.reduce((html, movie) => {
                     return html + getMovieTemplate(movie, 4);
                     },'')
-                : 
+                :
                 `<div class="alert alert-danger" role="alert">
                     ${state.error}
                 </div>`
@@ -107,4 +108,5 @@ function render(state){
             </section>
         </section>
         </section>`;
+
 }
